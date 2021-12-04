@@ -20,4 +20,5 @@ from Article.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('spiderArticle',spiderArticle,name='spiderArticle'),
+    path('displayArticle',displayArticle,name='displayArticle'),
 ]

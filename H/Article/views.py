@@ -6,6 +6,13 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
+def strSource(sourceInput):
+    source=["LOFTER"]
+    if sourceInput>0:
+        return source[sourceInput-1]
+    else:
+        return "未知"
+
 def getHTMLText(url):
     try:
         r = requests.get(url, timeout=30)
@@ -43,6 +50,7 @@ def spiderArticle(request):
         newA.title=articleTitle
         newA.content=articleContentT
         newA.author=authorName
+        newA.source=1
         patternA = r"post/"
         a = re.search(patternA, linkInput)
         authorUrl = ""
@@ -78,8 +86,37 @@ def spiderArticle(request):
             newAT.save()
         result = {
             "code": 200,
-            "msg": "导入成功"
+            "msg": "导入成功",
+            "id": curA.AID
         }
         return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
 
+def displayArticle(request):
+    if request.method == 'POST':
+        idInput = request.POST.get("id")
+        curA = Article.objects.get(AID=idInput)
+        curAT=Article_Tag.objects.filter(AID=idInput)
+        tags=[]
+        for i in range(len(curAT)):
+            curT=Tag.objects.get(TID=curAT[i].TID)
+            tags.append(curT.name)
+
+        #test
+        print(idInput)
+
+        result = {
+            "code": 200,
+            "msg": "请求文章详细信息成功",
+            "title":curA.title,
+            "link":curA.link,
+            "author":curA.author,
+            "authorLink":curA.authorLink,
+            "importTime":curA.importTime,
+            "publicTime":curA.publicTime,
+            "note":curA.note,
+            "source":strSource(curA.source),
+            "content":curA.content,
+            "tag":tags
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
 

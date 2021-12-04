@@ -29,6 +29,7 @@ import qs from 'qs';
         inputLink:'',
         dialogFormVisible: false,
         inputYear:'',
+        getID:'',
       };
     },
     methods: {
@@ -46,11 +47,14 @@ import qs from 'qs';
           data:qs.stringify(data)
         }).then((res) => {
           console.log("res=>", res);
+          if (res.data.code === 200) {
+            this.getID=res.data.id;
+            this.$router.push("/article?index="+this.getID);
+          }
           }
         ).catch((err) => {
           console.log("err=>", err);
         })
-        dialogFormVisible = false
       }
     }
   };

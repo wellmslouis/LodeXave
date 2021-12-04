@@ -11,6 +11,7 @@ class Article(models.Model):
     author=models.CharField(max_length=100)
     authorLink=models.CharField(max_length=500)
     note=models.CharField(max_length=10000,default="暂无")
+    source=models.IntegerField(default=0)#来源：lofter为1
 
 class Article_Tag(models.Model):
     AID=models.IntegerField()

@@ -2,7 +2,7 @@ from django.contrib import admin
 from Article.models import *
 
 class articleAdmin(admin.ModelAdmin):
-    list_display =["AID","link","title","importTime","publicTime","author","authorLink"]
+    list_display =["AID","link","title","importTime","publicTime","author","authorLink","source"]
 
 admin.site.register(Article,articleAdmin)
 
