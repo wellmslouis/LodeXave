@@ -19,6 +19,8 @@ def spiderArticle(request):
     if request.method=='POST':
         linkInput=request.POST.get("link")
         yearInput = request.POST.get("year")
+
+        #爬取数据
         text = getHTMLText(linkInput)
         soup = BeautifulSoup(text, "lxml")
         author = soup.find("div", class_="selfinfo")
@@ -34,13 +36,13 @@ def spiderArticle(request):
             a = i.text
             articleContentT+=a
             articleContentT+="\n"
-        #print(articleContentT)
+
+        #导入数据
         newA=Article()
         newA.link=linkInput
         newA.title=articleTitle
         newA.content=articleContentT
         newA.author=authorName
-        # 找到作者主页
         patternA = r"post/"
         a = re.search(patternA, linkInput)
         authorUrl = ""
@@ -50,8 +52,30 @@ def spiderArticle(request):
         b=yearInput+"-"+articleMonth+"-"+articleDay
         c = dt.strptime(b, '%Y-%m-%d')
         newA.publicTime=c
-        print(newA.publicTime)
         newA.save()
+        curA=Article.objects.get(link=linkInput)
+
+        d = soup.find("div", class_="tag")
+        tags=d.find_all("a")
+        for i in tags:
+            e=i.text
+            f=""
+            for j in e:
+                if j=="●" or j==" ":
+                    continue
+                else:
+                    f+=j
+            try:
+                curT=Tag.objects.get(name=f)
+            except:#没有存过这个tag
+                newT=Tag()
+                newT.name=f
+                newT.save()
+                curT = Tag.objects.get(name=f)
+            newAT=Article_Tag()
+            newAT.AID=curA.AID
+            newAT.TID=curT.TID
+            newAT.save()
         result = {
             "code": 200,
             "msg": "导入成功"
