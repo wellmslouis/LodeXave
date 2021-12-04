@@ -10,7 +10,7 @@
             <el-input v-model="inputYear" autocomplete="off" placeholder="请输入发表年份（四位数字）"></el-input>
             <div slot="footer" class="dialog-footer">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+              <el-button type="primary" @click="autoImport">确 定</el-button>
             </div>
           </el-dialog>
         </div>
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import qs from 'qs';
   export default {
     data() {
       return {
@@ -33,6 +34,23 @@
     methods: {
       handleClick(tab, event) {
         console.log(tab, event);
+      },
+      autoImport(){
+        let data={
+          link: this.inputLink,
+          year: this.inputYear
+        }
+        this.$axios({
+          method:"post",
+          url:"spiderArticle",
+          data:qs.stringify(data)
+        }).then((res) => {
+          console.log("res=>", res);
+          }
+        ).catch((err) => {
+          console.log("err=>", err);
+        })
+        dialogFormVisible = false
       }
     }
   };
