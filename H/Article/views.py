@@ -100,10 +100,6 @@ def displayArticle(request):
         for i in range(len(curAT)):
             curT=Tag.objects.get(TID=curAT[i].TID)
             tags.append(curT.name)
-
-        #test
-        print(idInput)
-
         result = {
             "code": 200,
             "msg": "请求文章详细信息成功",
@@ -120,3 +116,23 @@ def displayArticle(request):
         }
         return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
 
+def datetime_toString(dt):
+    return dt.strftime("%Y-%m-%d")
+
+def displayAllArticles(request):
+    if request.method == 'POST':
+        articlesInput=Article.objects.filter()
+        articles=[]
+        for i in articlesInput:
+            article={}
+            article["id"]=i.AID
+            article["title"]=i.title
+            article["author"]=i.author
+            article["publicTime"]=datetime_toString(i.publicTime)
+            articles.append(article)
+        result = {
+            "code": 200,
+            "msg": "请求文章们详细信息成功",
+            "articles":articles
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})

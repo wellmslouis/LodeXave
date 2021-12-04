@@ -5,6 +5,7 @@
         <div class="zxyA">
             <el-tag v-for="tag in tags" :key="tag">{{tag}}</el-tag>
             <h1>{{title}}</h1>
+            <el-divider></el-divider>
             <div style="white-space: pre-wrap;">{{content}}</div>
         </div>
     </el-main>
