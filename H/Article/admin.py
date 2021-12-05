@@ -16,3 +16,13 @@ class a_tAdmin(admin.ModelAdmin):
 
 admin.site.register(Article_Tag,a_tAdmin)
 
+class collectionAdmin(admin.ModelAdmin):
+    list_display =["CID","name"]
+
+admin.site.register(Collection,collectionAdmin)
+
+class c_aAdmin(admin.ModelAdmin):
+    list_display =["CID","AID"]
+
+admin.site.register(Collection_Article,c_aAdmin)
+

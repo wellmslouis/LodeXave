@@ -4,7 +4,10 @@
     <el-main>
         <div class="zxyA">
             <el-tag v-for="tag in tags" :key="tag">{{tag}}</el-tag>
-            <h1>{{title}}</h1>
+            <div >
+              <span style="font-size:30px;font-weight:bold;line-height:70px;">{{title}}</span>
+              <el-link icon="el-icon-edit" style="font-size:20px;font-weight:bold;line-height:70px;" @click="gotoE"></el-link>
+            </div>
             <el-divider></el-divider>
             <div style="white-space: pre-wrap;">{{content}}</div>
         </div>
@@ -41,6 +44,11 @@ export default {
         ).catch((err) => {
           console.log("err=>", err);
         })
+    },
+    methods: {
+      gotoE(){
+        this.$router.push("/editArticle?index="+this.$route.query.index);
+      }
     }
 }
 </script>

@@ -20,3 +20,11 @@ class Article_Tag(models.Model):
 class Tag(models.Model):
     TID = models.AutoField(primary_key=True)
     name=models.CharField(max_length=100)
+
+class Collection(models.Model):
+    CID = models.AutoField(primary_key=True)
+    name=models.CharField(max_length=100)
+
+class Collection_Article(models.Model):
+    CID = models.IntegerField()
+    AID = models.IntegerField()

@@ -22,4 +22,6 @@ urlpatterns = [
     path('spiderArticle',spiderArticle,name='spiderArticle'),
     path('displayArticle',displayArticle,name='displayArticle'),
     path('displayAllArticles',displayAllArticles,name='displayAllArticles'),
+    path('editArticle',editArticle,name='editArticle'),
+    path('deleteArticle',deleteArticle,name='deleteArticle'),
 ]

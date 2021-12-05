@@ -37,10 +37,7 @@
           </el-menu>
         </el-aside>
         <el-main>
-          <div v-if="isFirst">首页</div>
-          <div v-else>
             <router-view></router-view>
-          </div>
         </el-main>
       </el-container>
   </el-container>

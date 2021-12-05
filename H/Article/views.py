@@ -97,9 +97,11 @@ def displayArticle(request):
         curA = Article.objects.get(AID=idInput)
         curAT=Article_Tag.objects.filter(AID=idInput)
         tags=[]
+        strTags=""
         for i in range(len(curAT)):
             curT=Tag.objects.get(TID=curAT[i].TID)
             tags.append(curT.name)
+            strTags+=curT.name+";"
         result = {
             "code": 200,
             "msg": "请求文章详细信息成功",
@@ -112,7 +114,8 @@ def displayArticle(request):
             "note":curA.note,
             "source":strSource(curA.source),
             "content":curA.content,
-            "tag":tags
+            "tag":tags,
+            "strT":strTags
         }
         return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
 
@@ -129,10 +132,63 @@ def displayAllArticles(request):
             article["title"]=i.title
             article["author"]=i.author
             article["publicTime"]=datetime_toString(i.publicTime)
+            try:
+                getCID=Collection_Article.objects.get(AID=i.AID).CID
+                getCName=Collection.objects.get(CID=getCID).name
+            except:
+                getCName=""
+            article["collectionName"]=getCName
             articles.append(article)
         result = {
             "code": 200,
             "msg": "请求文章们详细信息成功",
-            "articles":articles
+            "articles":articles,
+            "length":len(articles)
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def editArticle(request):
+    if request.method == 'POST':
+        getAID=request.POST.get("id")
+        curA=Article.objects.get(AID=getAID)
+        getTitle=request.POST.get("title")
+        getAuthor=request.POST.get("author")
+        getContent=request.POST.get("content")
+        getStrT=request.POST.get("strT")
+        curA.title=getTitle
+        curA.author=getAuthor
+        curA.content=getContent
+        curA.save()
+        getTags=getStrT.split(";")
+        Article_Tag.objects.filter(AID=getAID).delete()
+        for i in getTags:
+            if i=="":
+                continue
+            try:
+                curT=Tag.objects.get(name=i)
+            except:#没有存过这个tag
+                newT=Tag()
+                newT.name=i
+                newT.save()
+                curT = Tag.objects.get(name=i)
+            newAT=Article_Tag()
+            newAT.AID=curA.AID
+            newAT.TID=curT.TID
+            newAT.save()
+        result = {
+            "code": 200,
+            "msg": "修改文章成功",
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def deleteArticle(request):
+    if request.method == 'POST':
+        getAID=request.POST.get("id")
+        Article.objects.filter(AID=getAID).delete()
+        Article_Tag.objects.filter(AID=getAID).delete()
+        Collection_Article.objects.filter(AID=getAID).delete()
+        result = {
+            "code": 200,
+            "msg": "删除文章成功",
         }
         return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
