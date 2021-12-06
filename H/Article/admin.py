@@ -22,7 +22,7 @@ class collectionAdmin(admin.ModelAdmin):
 admin.site.register(Collection,collectionAdmin)
 
 class c_aAdmin(admin.ModelAdmin):
-    list_display =["CID","AID"]
+    list_display =["CID","AID","orderID"]
 
 admin.site.register(Collection_Article,c_aAdmin)
 

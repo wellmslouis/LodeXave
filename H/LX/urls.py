@@ -24,4 +24,8 @@ urlpatterns = [
     path('displayAllArticles',displayAllArticles,name='displayAllArticles'),
     path('editArticle',editArticle,name='editArticle'),
     path('deleteArticle',deleteArticle,name='deleteArticle'),
+    path('searchArticle',searchArticle,name='searchArticle'),
+    path('displayAllTags',displayAllTags,name='displayAllTags'),
+    path('displayAllArticlesInTag',displayAllArticlesInTag,name='displayAllArticlesInTag'),
+    path('deleteTag',deleteTag,name='deleteTag'),
 ]

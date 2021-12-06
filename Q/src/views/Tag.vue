@@ -1,7 +1,6 @@
 <template>
   <div>
-    <span style="font-size:30px;font-weight:bold;line-height:70px">藏书几何</span>
-    <el-input placeholder="检索标题关键词" v-model="inputSearch" style="width:200px;float: right;padding: 15px; "><el-button slot="append" icon="el-icon-search" circle @click="search"></el-button></el-input>
+    <span style="font-size:30px;font-weight:bold;line-height:70px">#{{name}}</span>
     <el-divider></el-divider>
     <div v-if="length>0">
     <div v-for="(item,index) in articles" :key="index">
@@ -21,8 +20,7 @@
     </div>
     </div>
     <div v-else>
-      <el-empty v-if="emptyoption==1" description="还没有导入文章呢"></el-empty>
-      <el-empty v-else description="没有检索到关键字欸"></el-empty>
+      <el-empty description="标签内没有文章呢"></el-empty>
     </div>
   </div>
 </template>
@@ -33,20 +31,24 @@ export default {
     data() {
         return{
           articles:[],
-          inputSearch:'',
           length:'',
-          emptyoption:1,//1正常，2检索关键字
+          name:''
         }
     },
     created(){
+        let data={
+          id: this.$route.query.index,
+        }
         this.$axios({
           method:"post",
-          url:"displayAllArticles",
+          url:"displayAllArticlesInTag",
+          data:qs.stringify(data)
         }).then((res) => {
           console.log("res=>", res);
             if (res.data.code === 200) {
               this.articles=res.data.articles
               this.length=res.data.length
+              this.name=res.data.name
             }
         }
         ).catch((err) => {
@@ -72,26 +74,6 @@ export default {
           console.log("res=>", res);
             if (res.data.code === 200) {
               window.location.reload();
-            }
-        }
-        ).catch((err) => {
-          console.log("err=>", err);
-        })
-      },
-      search(){
-        let data={
-          search:this.inputSearch
-        }
-        this.$axios({
-          method:"post",
-          url:"searchArticle",
-          data:qs.stringify(data)
-        }).then((res) => {
-          console.log("res=>", res);
-            if (res.data.code === 200) {
-              this.articles=res.data.articles
-              this.length=res.data.length
-              this.emptyoption=2
             }
         }
         ).catch((err) => {

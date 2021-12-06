@@ -24,7 +24,7 @@
               </template>
                 <el-menu-item index="/shelf" @click="notFirst">文章</el-menu-item>
                 <el-menu-item index="/manualImport"  @click="notFirst">合集</el-menu-item>
-                <el-menu-item index="/manualImport"  @click="notFirst">标签</el-menu-item>
+                <el-menu-item index="/tagShelf"  @click="notFirst">标签</el-menu-item>
             </el-submenu>
             <el-menu-item index="/personalCenter">
               <i class="el-icon-user"></i>
