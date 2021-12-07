@@ -35,6 +35,16 @@ const routes = [
         component: () => import('../views/Tag.vue')
       },
       {
+        path: '/collectionShelf',
+        name: 'CollectionShelf',
+        component: () => import('../views/CollectionShelf.vue')
+      },
+      {
+        path: '/collection',
+        name: 'Collection',
+        component: () => import('../views/Collection.vue')
+      },
+      {
         path: '/first',
         name: 'First',
         component: () => import('../views/First.vue')

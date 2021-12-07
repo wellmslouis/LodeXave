@@ -17,7 +17,7 @@ class a_tAdmin(admin.ModelAdmin):
 admin.site.register(Article_Tag,a_tAdmin)
 
 class collectionAdmin(admin.ModelAdmin):
-    list_display =["CID","name"]
+    list_display =["CID","name","number"]
 
 admin.site.register(Collection,collectionAdmin)
 

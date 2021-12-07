@@ -1,11 +1,11 @@
 <template>
   <div>
-    <span style="font-size:30px;font-weight:bold;line-height:70px">藏书几何</span>
+    <span style="font-size:30px;font-weight:bold;line-height:70px">藏路几何</span>
     <el-divider></el-divider>
     <div v-if="length>0">
         <el-row>
     <div v-for="(item,index) in tags" :key="index">
-            <el-col :offset="1" :span="5">
+            <el-col :span="6">
                 <el-card class="box-card" shadow="hover">
                     <div slot="header" class="clearfix">
                     <el-link :underline="false" style="font-size:20px;font-weight:550;" @click="gotoT(item.id)">#{{item.name}}({{item.number}})</el-link>

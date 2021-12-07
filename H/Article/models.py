@@ -24,6 +24,7 @@ class Tag(models.Model):
 class Collection(models.Model):
     CID = models.AutoField(primary_key=True)
     name=models.CharField(max_length=100)
+    number=models.IntegerField(default=0)
 
 class Collection_Article(models.Model):
     CID = models.IntegerField()

@@ -28,4 +28,13 @@ urlpatterns = [
     path('displayAllTags',displayAllTags,name='displayAllTags'),
     path('displayAllArticlesInTag',displayAllArticlesInTag,name='displayAllArticlesInTag'),
     path('deleteTag',deleteTag,name='deleteTag'),
+    path('createCollection',createCollection,name='createCollection'),
+    path('displayAllCollections', displayAllCollections, name='displayAllCollections'),
+    path('modifyCollectionName', modifyCollectionName, name='modifyCollectionName'),
+    path('deleteCollection', deleteCollection, name='deleteCollection'),
+    path('addArticleToCollection', addArticleToCollection, name='addArticleToCollection'),
+    path('displayAllArticlesInCollection', displayAllArticlesInCollection, name='displayAllArticlesInCollection'),
+    path('deleteArticleFromCollection', deleteArticleFromCollection, name='deleteArticleFromCollection'),
+    path('moveUpInCollection', moveUpInCollection, name='moveUpInCollection'),
+    path('moveDownInCollection', moveDownInCollection, name='moveDownInCollection'),
 ]

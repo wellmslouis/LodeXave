@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from datetime import datetime as dt
 from Article.models import *
 import requests
+import time
 import re
 from bs4 import BeautifulSoup
 
@@ -47,24 +48,43 @@ def spiderArticle(request):
                 articleContentT+=a
                 articleContentT+="\n"
             b = yearInput + "-" + articleMonth + "-" + articleDay
+            c = dt.strptime(b, '%Y-%m-%d')
             d = soup.find("div", class_="tag")
             tags = d.find_all("a")
         else:
             author = soup.find("div", class_="g-sd")
-            authorName = author.find("h1").text
-
-            article = soup.find("div", class_="dtinner")
-            articleText = article.find("div", class_="ctc box")
-            articleTitle = articleText.find("h2").text
-            articleContents = articleText.findAll("p")
-            articleContentT = ""
-            for i in articleContents:
-                a = i.text
-                articleContentT += a
-                articleContentT += "\n"
-            b=article.find("a",class_="date").text
-            d=soup.find("div", class_="info box")
-            tags=d.find_all("a",class_="tag")
+            if author!=None:
+                authorName = author.find("h1").text
+                article = soup.find("div", class_="dtinner")
+                articleText = article.find("div", class_="ctc box")
+                articleTitle = articleText.find("h2").text
+                articleContents = articleText.findAll("p")
+                articleContentT = ""
+                for i in articleContents:
+                    a = i.text
+                    articleContentT += a
+                    articleContentT += "\n"
+                b=article.find("a",class_="date").text
+                c = dt.strptime(b, '%Y-%m-%d')
+                d=soup.find("div", class_="info box")
+                tags=d.find_all("a",class_="tag")
+            else:
+                author=soup.find("div", class_="g-hd box")
+                authorName = author.find("h1").text
+                article = soup.find("div", class_="m-postdtl")
+                articleText = article.find("div", class_="ctc box")
+                articleTitle = articleText.find("h2").text
+                articleContents = articleText.findAll("p")
+                articleContentT = ""
+                for i in articleContents:
+                    e=str(i).replace("<br/>","\n")
+                    a=(e.replace("<p>","")).replace("</p>","")
+                    articleContentT += a
+                    articleContentT += "\n"
+                b = article.find("a", class_="date").text
+                c = dt.strptime(b, '%Y.%m.%d')
+                d = soup.find("div", class_="info box")
+                tags = d.find_all("a", class_="tag")
 
 
         #导入数据
@@ -80,7 +100,7 @@ def spiderArticle(request):
         for i in range(a.start()):
             authorUrl += linkInput[i]
         newA.authorLink=authorUrl
-        c = dt.strptime(b, '%Y-%m-%d')
+
         newA.publicTime=c
         newA.save()
         curA=Article.objects.get(link=linkInput)
@@ -160,11 +180,19 @@ def displayAllArticles(request):
                 getCName=""
             article["collectionName"]=getCName
             articles.append(article)
+        getAllC = Collection.objects.filter()
+        collections = []
+        for i in getAllC:
+            collection = {}
+            collection["name"] = i.name
+            collection["id"] = i.CID
+            collections.append(collection)
         result = {
             "code": 200,
             "msg": "请求文章们详细信息成功",
             "articles":articles,
-            "length":len(articles)
+            "length":len(articles),
+            "collections":collections,
         }
         return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
 
@@ -304,3 +332,163 @@ def deleteTag(request):
             "msg": "删除标签成功"
         }
         return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def createCollection(request):
+    if request.method == 'POST':
+        newC=Collection()
+        newC.name="新建合集"+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        newC.save()
+        result = {
+            "code": 200,
+            "msg": "创建合集成功"
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def displayAllCollections(request):
+    if request.method == 'POST':
+        getAllC = Collection.objects.filter()
+        collections = []
+        for i in getAllC:
+            collection={}
+            collection["name"]=i.name
+            collection["id"]=i.CID
+            collection["num"]=i.number
+            collections.append(collection)
+        result = {
+            "code": 200,
+            "msg": "请求合集们详细信息成功",
+            "collections": collections,
+            "length": len(collections)
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def modifyCollectionName(request):
+    if request.method == 'POST':
+        getCID = request.POST.get("id")
+        getName=request.POST.get("name")
+        curC=Collection.objects.get(CID=getCID)
+        curC.name=getName
+        curC.save()
+        result = {
+            "code": 200,
+            "msg": "重命名合集成功"
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def deleteCollection(request):
+    if request.method == 'POST':
+        getCID = request.POST.get("id")
+        Collection.objects.get(CID=getCID).delete()
+        Collection_Article.objects.filter(CID=getCID).delete()
+        result = {
+            "code": 200,
+            "msg": "删除合集成功"
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def addArticleToCollection(request):
+    if request.method == 'POST':
+        getCID = request.POST.get("cid")
+        getAID=request.POST.get("aid")
+        curC=Collection.objects.get(CID=getCID)
+        newCA=Collection_Article()
+        newCA.CID=getCID
+        newCA.AID=getAID
+        newCA.orderID=curC.number+1
+        newCA.save()
+        curC.number+=1
+        curC.save()
+        result = {
+            "code": 200,
+            "msg": "添加至合集成功"
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def displayAllArticlesInCollection(request):
+    if request.method == 'POST':
+        getCID = request.POST.get("id")
+        curC=Collection.objects.get(CID=getCID)
+        curCAs=Collection_Article.objects.filter(CID=getCID)
+        articles=[]
+        for i in curCAs:
+            article={}
+            article["AID"]=i.AID
+            article["OID"]=i.orderID
+            article["title"]=Article.objects.get(AID=i.AID).title
+            articles.append(article)
+        articles.sort(key=lambda item: item.get("OID"))
+        result = {
+            "code": 200,
+            "msg": "请求合集内文章们全部信息成功",
+            "name":curC.name,
+            "articles":articles
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def deleteArticleFromCollection(request):
+    if request.method == 'POST':
+        getAID = request.POST.get("id")
+        curCA=Collection_Article.objects.get(AID=getAID)
+        a=curCA.orderID
+        curCID=curCA.CID
+        curC=Collection.objects.get(CID=curCID)
+        curC.number-=1
+        curC.save()
+        curCA.delete()
+        curCAs=Collection_Article.objects.filter(CID=curCID)
+        for i in curCAs:
+            if i.orderID>a:
+                i.orderID-=1
+                i.save()
+        result = {
+            "code": 200,
+            "msg": "删除合集中文章成功"
+        }
+        return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def moveUpInCollection(request):
+    if request.method == 'POST':
+        getOID = int(request.POST.get("oid"))
+        getCID=request.POST.get("cid")
+        if getOID==1:
+            result = {
+                "code": 200,
+                "msg": "已在最前"
+            }
+            return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+        else:
+            curA=Collection_Article.objects.get(orderID=getOID,CID=getCID)
+            curB=Collection_Article.objects.get(orderID=getOID-1,CID=getCID)
+            curA.orderID-=1
+            curB.orderID += 1
+            curA.save()
+            curB.save()
+            result = {
+                "code": 200,
+                "msg": "上移成功"
+            }
+            return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+
+def moveDownInCollection(request):
+    if request.method == 'POST':
+        getOID = int(request.POST.get("oid"))
+        getCID=request.POST.get("cid")
+        curNum=int(Collection.objects.get(CID=getCID).number)
+        if getOID==curNum:
+            result = {
+                "code": 200,
+                "msg": "已在最后"
+            }
+            return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
+        else:
+            curA=Collection_Article.objects.get(orderID=getOID,CID=getCID)
+            curB=Collection_Article.objects.get(orderID=getOID+1,CID=getCID)
+            curA.orderID+=1
+            curB.orderID -= 1
+            curA.save()
+            curB.save()
+            result = {
+                "code": 200,
+                "msg": "下移成功"
+            }
+            return JsonResponse(result, json_dumps_params={"ensure_ascii": False})
